@@ -5,6 +5,11 @@
   "packageManager": "bun@1.2.20",
   "type": "module",
   "license": "MIT",
+  "keywords": [
+    "factory",
+    "test",
+    "fixture"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
