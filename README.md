@@ -1,6 +1,12 @@
-<h1 align="center">@aklinker1/zero-factory</h1>
+<div align="center">
+  
+# @aklinker1/zero-factory
 
-<p align="center">Zero dependency object factory generator for testing.</p>
+[![JSR](https://jsr.io/badges/@aklinker1/zero-factory)](https://jsr.io/@aklinker1/zero-factory) [![NPM Version](https://img.shields.io/npm/v/%40aklinker1%2Fzero-factory?logo=npm&labelColor=red&color=white)](https://www.npmjs.com/package/@aklinker1/zero-factory) [![Docs](https://img.shields.io/badge/Docs-blue?logo=readme&logoColor=white)](https://jsr.io/@aklinker1/zero-factory) [![API Reference](https://img.shields.io/badge/API%20Reference-blue?logo=readme&logoColor=white)](https://jsr.io/@aklinker1/zero-factory/doc) [![License](https://img.shields.io/npm/l/%40aklinker1%2Fzero-factory)](https://github.com/aklinker1/zero-factory/blob/main/LICENSE)
+
+Zero dependency object factory generator for testing.
+
+</div>
 
 ```ts
 import { createFactory, createSequence } from "@aklinker1/zero-factory";
