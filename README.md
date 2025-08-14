@@ -1,4 +1,4 @@
-<h1 align="center">`@aklinker1/zero-factory`</h1>
+<h1 align="center">@aklinker1/zero-factory</h1>
 
 <p align="center">Zero dependency object factory generator for testing.</p>
 
@@ -15,7 +15,7 @@ userFactory({ id: "test", username: "user" });
 // => {
 //   id: "test",
 //   username: "user",
-//   email: "example-email"
+//   email: "example-email-0.20088082049103195"
 // }
 ```
 
@@ -25,21 +25,21 @@ npm i @aklinker1/zero-factory
 
 **Features:**
 
-- Type-safe
-- Deeply merge overrides with default values
-- Sequence generator for IDs
-- "traits" - define multiple variants of default values
+- ✅ Type-safe
+- ✨ Deeply merge overrides with default values
+- 🔢 Sequence generator for IDs
+- 🎨 "traits" - define multiple variants of default values
 
 **Not Supported:**
 
 - **Class instances**: Only objects can be created. Factories will not create class instances.
-- **Randomized data**: There are a handful of very useful libraries for generating rand values for testing (`faker-js`, `chance`, `@ngneat/falso`, `casual`, etc).
+- **Randomized data**: There are already several mature libraries for generating randomized testing data (`@ngneat/falso`, `faker-js`, `chance`, `casual`, etc).
 
 ## Usage
 
 ### Factories
 
-Use `createFactory` to build an object factory. Object factories are simple functions that accept overrides and returns an object containing the default values and overrides.
+Use `createFactory` to build an object factory. Object factories are simple functions that returns an object:
 
 ```ts
 const userFactory = createFactory<User>({
@@ -57,7 +57,7 @@ const userFactory = createFactory<User>({
 Then, to get an object conforming to the `User` type, just call the factory as a function:
 
 ```ts
-const user1 = userFactory();
+const user = userFactory();
 // => {
 //   id: "user-id",
 //   username: "username",
@@ -67,8 +67,12 @@ const user1 = userFactory();
 //     receiveSecurityEmails: true,
 //   }
 // }
+```
 
-const user2 = userFactory({
+You can also override specific properties at any level:
+
+```ts
+const user = userFactory({
   username: "overridden",
   preferences: {
     receiveMarketingEmails: false,
@@ -103,7 +107,7 @@ const userFactory = createFactory({
 Then, to generate an object using this trait, the trait is a function defined on the object factory:
 
 ```ts
-const user1 = userFactory.noEmails();
+const user = userFactory.noEmails();
 // => {
 //   id: "user-id",
 //   username: "username",
@@ -113,8 +117,12 @@ const user1 = userFactory.noEmails();
 //     receiveSecurityEmails: false,
 //   }
 // }
+```
 
-const user2 = userFactory.noEmails({ username: "overridden" });
+When using a trait and overriding specific properties, the trait's default values are applied before the overrides:
+
+```ts
+const user = userFactory.noEmails({ username: "overridden" });
 // => {
 //   id: "user-id",
 //   username: "overridden",
@@ -167,7 +175,7 @@ const userFactory = createFactory({
 
 ### Sequences
 
-For things like IDs, it can be useful to generate them incrementally each time the factory is called. Use the `createSequence` function to do this:
+For values like IDs, it can be useful to generate them incrementally instead of using randomized values. Use the `createSequence` function to do this:
 
 ```ts
 const userIdSequence = createSequence((i) => `user-${i}`);
@@ -178,7 +186,7 @@ userIdSequence(); // "user-2"
 // ...
 ```
 
-The function used to define the sequence includes a single parameter, a number starting at 0 that gets incremented each time the sequence is called. The return value can be anything (string, boolean, object, integer, etc).
+The argument `i` is a number starting at 0 that gets incremented by 1 each time the sequence is called. The return value can be anything (string, boolean, object, integer, etc).
 
 ```ts
 const intSequence = createSequence((i) => i + 1);
@@ -213,7 +221,7 @@ intSequence(); // "prefix-2"
 
 ## Future Features?
 
-May or may not implement these
+May or may not implement these.
 
 - Generate multiple items:
   ```ts
