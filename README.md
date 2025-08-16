@@ -45,7 +45,7 @@ npm i @aklinker1/zero-factory
 
 ### Factories
 
-Use `createFactory` to build an object factory. Object factories are simple functions that returns an object:
+Use `createFactory` to build an object factory. Object factories are simple functions that return an object:
 
 ```ts
 const userFactory = createFactory<User>({
@@ -251,7 +251,7 @@ May or may not implement these.
     id: createSequence("post-"),
     userId: userIdSequence,
   })
-    .associate("user", (user) => ({
+    .associate<User>("user", (user) => ({
       userId: user.id
     }))
 
