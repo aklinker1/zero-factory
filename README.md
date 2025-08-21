@@ -1,5 +1,5 @@
 <div align="center">
-  
+
 # @aklinker1/zero-factory
 
 [![JSR](https://jsr.io/badges/@aklinker1/zero-factory)](https://jsr.io/@aklinker1/zero-factory) [![NPM Version](https://img.shields.io/npm/v/%40aklinker1%2Fzero-factory?logo=npm&labelColor=red&color=white)](https://www.npmjs.com/package/@aklinker1/zero-factory) [![Docs](https://img.shields.io/badge/Docs-blue?logo=readme&logoColor=white)](https://jsr.io/@aklinker1/zero-factory) [![API Reference](https://img.shields.io/badge/API%20Reference-blue?logo=readme&logoColor=white)](https://jsr.io/@aklinker1/zero-factory/doc) [![License](https://img.shields.io/npm/l/%40aklinker1%2Fzero-factory)](https://github.com/aklinker1/zero-factory/blob/main/LICENSE)
@@ -35,11 +35,11 @@ npm i @aklinker1/zero-factory
 - ✨ Deeply merge overrides with default values
 - 🔢 Sequence generator for IDs
 - 🎨 "traits" - define multiple variants of default values
+- ⚡ Compatible with all fake data generators (`@ngneat/falso`, `faker-js`, `chance`, `casual`, etc)
 
 **Not Supported:**
 
 - **Class instances**: Only objects can be created. Factories will not create class instances.
-- **Randomized data**: There are already several mature libraries for generating randomized testing data (`@ngneat/falso`, `faker-js`, `chance`, `casual`, etc).
 
 ## Usage
 
