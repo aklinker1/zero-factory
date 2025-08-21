@@ -113,5 +113,57 @@ describe("Factory APIs", () => {
         expect(actual).toEqual(expected);
       });
     });
+
+    describe(".many()", () => {
+      it("should generate many objects", () => {
+        const factory = createFactory<User>({
+          id: createSequence(),
+          username: "default",
+        });
+        const actual = factory.many(3);
+        expect(actual).toEqual([
+          { id: 0, username: "default" },
+          { id: 1, username: "default" },
+          { id: 2, username: "default" },
+        ]);
+      });
+
+      it("should generate many objects with overrides", () => {
+        const factory = createFactory<User>({
+          id: createSequence(),
+          username: "default",
+        });
+        const actual = factory.many(2, { username: "override" });
+        expect(actual).toEqual([
+          { id: 0, username: "override" },
+          { id: 1, username: "override" },
+        ]);
+      });
+
+      it("should generate many objects from a trait", () => {
+        const factory = createFactory<User>({
+          id: createSequence(),
+          username: "default",
+        }).trait("test", { username: "trait" });
+
+        const actual = factory.test.many(2);
+        expect(actual).toEqual([
+          { id: 0, username: "trait" },
+          { id: 1, username: "trait" },
+        ]);
+      });
+
+      it("should generate many objects from a trait with overrides", () => {
+        const factory = createFactory<User>({
+          id: createSequence(),
+          username: "default",
+        }).trait("test", { username: "trait" });
+        const actual = factory.test.many(2, { username: "override" });
+        expect(actual).toEqual([
+          { id: 0, username: "override" },
+          { id: 1, username: "override" },
+        ]);
+      });
+    });
   });
 });

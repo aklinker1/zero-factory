@@ -25,6 +25,21 @@ export type Factory<
  */
 export type FactoryFn<TObject> = {
   (overrides?: DeepPartial<TObject>): TObject;
+  /**
+   * Generate multiple items.
+   *
+   * @example
+   * ```ts
+   * userFactory.many(4, { username: "override" });
+   * // [
+   * //   { id: "user-0", username: "override", ... },
+   * //   { id: "user-1", username: "override", ... },
+   * //   { id: "user-2", username: "override", ... },
+   * //   { id: "user-3", username: "override", ... },
+   * // ]
+   * ```
+   */
+  many(count: number, overrides?: DeepPartial<TObject>): TObject[];
 };
 
 /**
@@ -96,6 +111,9 @@ function createFactoryInternal<T extends Record<string, any>>(
     (overrides?: any): any => generateObject(defaults, overrides),
 
     {
+      many: (count: number, overrides?: any): T[] =>
+        generateManyObjects(count, defaults, overrides),
+
       // Modifier functions
 
       trait: (
@@ -111,10 +129,13 @@ function createFactoryInternal<T extends Record<string, any>>(
 
       ...Object.fromEntries<any>(
         Object.entries(traits).map<any>(([name, traitDefaults]) => {
-          return [
-            name,
-            (overrides?: any): any => generateObject(traitDefaults, overrides),
-          ];
+          const traitFactory = (overrides?: any): any =>
+            generateObject(traitDefaults, overrides);
+
+          traitFactory.many = (count: number, overrides?: any): T[] =>
+            generateManyObjects(count, traitDefaults, overrides);
+
+          return [name, traitFactory];
         }),
       ),
     },
@@ -127,4 +148,14 @@ function generateObject<T extends Record<string, any>>(
 ): T {
   const resolvedDefaults: T = resolveDefaults<T>(defaults);
   return deepMerge<T>(resolvedDefaults, overrides);
+}
+
+function generateManyObjects<T extends Record<string, any>>(
+  count: number,
+  defaults: FactoryDefaults<T>,
+  overrides: DeepPartial<T>,
+): T[] {
+  return Array.from({ length: count }, () =>
+    generateObject(defaults, overrides),
+  );
 }
