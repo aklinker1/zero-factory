@@ -23,7 +23,10 @@ describe("Factory APIs", () => {
 
     describe("when traits are defined in the second type parameter", () => {
       it("should return a function intersected with a record of functions", () => {
-        type Expected = (overrides?: DeepPartial<User>) => User;
+        type Expected = {
+          (overrides?: DeepPartial<User>): User;
+          many: (count: number, overrides?: DeepPartial<User>) => User[];
+        };
 
         type Actual = Factory<User, "trait1" | "trait2">;
 
