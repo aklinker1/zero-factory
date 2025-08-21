@@ -1,4 +1,4 @@
-await Bun.$`rm -rf dist/*`;
+await Bun.$`rm -rf dist/*`.catch(() => {});
 
 console.log("Building \x1b[36m\x1b[1mindex.js\x1b[0m...\n");
 await Bun.$`bun build src/index.ts --outfile=dist/index.js --target=node`;
