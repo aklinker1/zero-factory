@@ -105,7 +105,6 @@ function createFactoryInternal<T extends Record<string, any>>(
   defaults: FactoryDefaults<T>,
   traits: Record<string, FactoryDefaults<T>>,
 ): Factory<T, any> {
-  console.log("Created factory:", { defaults, traits });
   return Object.assign(
     // Base factory function
     (overrides?: any): any => generateObject(defaults, overrides),
