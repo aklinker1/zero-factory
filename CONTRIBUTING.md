@@ -8,7 +8,7 @@
    bun check
    bun test
    bunx jsr publish --dry-run --allow-dirty
-   bunx publish --dry-run
+   bun publish --dry-run
    ```
 1. Update version in `package.json` and `jsr.json`
 1. Commit, tag, and push:
