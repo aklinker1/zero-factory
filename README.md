@@ -98,6 +98,20 @@ const user = userFactory({
 > [!IMPORTANT]
 > Arrays are not deeply merged. If a property is an array, overrides will fully replace it, like any other value.
 
+#### Many
+
+You can generate multiple objects using `factory.many(...)`. This method will return an array of objects.
+
+```ts
+userFactory.many(2, { username: "override" })
+// [
+//   { usenrame: "override", ... }
+//   { usenrame: "override", ... }
+// ]
+````
+
+Overridden fields apply to all the returned objects.
+
 #### Traits
 
 If there are common variants or "traits" of an object you want to be able to generate, use `factory.trait(...)`:
