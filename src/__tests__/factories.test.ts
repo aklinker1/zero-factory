@@ -10,6 +10,28 @@ describe("Factory APIs", () => {
   };
 
   describe("Factory", () => {
+    describe("enumerated values", () => {
+      it("should allow a function that returns a boolean for a boolean property", () => {
+        type TestObject = { bool: boolean };
+        const randBoolean = (): boolean => Math.random() > 0.5;
+
+        createFactory<TestObject>({ bool: randBoolean }); // Expect no type error here
+      });
+
+      it("should allow a function that returns an enum for an enum property", () => {
+        enum TestEnum {
+          A,
+          B,
+          C,
+        }
+        type TestObject = { value: TestEnum };
+        const randTestEnum = (): TestEnum =>
+          [TestEnum.A, TestEnum.B, TestEnum.C][Math.floor(Math.random() * 3)]!;
+
+        createFactory<TestObject>({ value: randTestEnum }); // Expect no type error here
+      });
+    });
+
     describe("when traits are not defined in the second type parameter", () => {
       it("should be just a function", () => {
         type Actual = Factory<User>;

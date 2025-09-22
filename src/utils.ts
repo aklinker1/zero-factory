@@ -37,14 +37,15 @@ function isMergeable(val: any): val is Record<string, any> {
   );
 }
 
-export type FactoryDefaults<T> =
-  T extends Array<any>
-    ? T | (() => T)
-    : T extends Record<string, any>
-      ? { [key in keyof T]: FactoryDefaults<T[key]> }
-      : T extends Function
+export type FactoryDefaults<T extends Record<string, any>> = {
+  [Key in keyof T]: T[Key] extends Array<any>
+    ? T[Key] | (() => T[Key])
+    : T[Key] extends Record<string, any>
+      ? FactoryDefaults<T[Key]>
+      : T[Key] extends Function
         ? never
-        : T | (() => T);
+        : T[Key] | (() => T[Key]);
+};
 
 export function resolveDefaults<T extends Record<string, any>>(
   val: FactoryDefaults<T>,
