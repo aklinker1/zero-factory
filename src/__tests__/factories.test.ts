@@ -30,6 +30,13 @@ describe("Factory APIs", () => {
 
         createFactory<TestObject>({ value: randTestEnum }); // Expect no type error here
       });
+
+      it("should allow a function that returns a Date for a Date property", () => {
+        type TestObject = { date: Date };
+        const randDate = () => new Date();
+
+        createFactory<TestObject>({ date: randDate }); // Expect no type error here
+      });
     });
 
     describe("when traits are not defined in the second type parameter", () => {
