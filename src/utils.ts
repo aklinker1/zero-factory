@@ -1,12 +1,11 @@
 /**
  * Deeply make objects partial, but ignoring arrays.
  */
-export type DeepPartial<T> =
-  T extends Array<any>
-    ? T
-    : T extends Record<string, any>
-      ? { [key in keyof T]?: DeepPartial<T[key]> }
-      : T;
+export type DeepPartial<T> = T extends any[] | Date
+  ? T
+  : T extends Record<string, any>
+    ? { [key in keyof T]?: DeepPartial<T[key]> }
+    : T;
 
 /**
  * Deep merge objects, not arrays. Only override values with `null`, `undefined` does not override the base value.
@@ -33,12 +32,14 @@ function isMergeable(val: any): val is Record<string, any> {
     // Is an object
     typeof val === "object" &&
     // Not an array
-    !Array.isArray(val)
+    !Array.isArray(val) &&
+    // Not a date instance
+    !(val instanceof Date)
   );
 }
 
 export type FactoryDefaults<T extends Record<string, any>> = {
-  [Key in keyof T]: T[Key] extends Array<any> | Date
+  [Key in keyof T]: T[Key] extends any[] | Date
     ? T[Key] | (() => T[Key])
     : T[Key] extends Record<string, any>
       ? FactoryDefaults<T[Key]>

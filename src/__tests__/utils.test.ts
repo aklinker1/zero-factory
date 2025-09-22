@@ -10,6 +10,7 @@ describe("Utilities", () => {
         c: {
           d: number | null;
         };
+        e: Date;
       };
       type Expected = {
         a?: string;
@@ -17,6 +18,7 @@ describe("Utilities", () => {
         c?: {
           d?: number | null;
         };
+        e?: Date;
       };
 
       type Actual = DeepPartial<Input>;
