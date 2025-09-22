@@ -95,6 +95,9 @@ const user = userFactory({
 // }
 ```
 
+> [!IMPORTANT]
+> Arrays are not deeply merged. If a property is an array, overrides will fully replace it, like any other value.
+
 #### Traits
 
 If there are common variants or "traits" of an object you want to be able to generate, use `factory.trait(...)`:
@@ -229,16 +232,6 @@ intSequence(); // "prefix-2"
 
 May or may not implement these.
 
-- Generate multiple items:
-  ```ts
-  userFactory.many(4, { username: "override" });
-  // [
-  //   { id: "user-0", username: "override", ... },
-  //   { id: "user-1", username: "override", ... },
-  //   { id: "user-2", username: "override", ... },
-  //   { id: "user-3", username: "override", ... },
-  // ]
-  ```
 - Associations:
 
   ```ts
