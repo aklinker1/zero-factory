@@ -103,12 +103,12 @@ const user = userFactory({
 You can generate multiple objects using `factory.many(...)`. This method will return an array of objects.
 
 ```ts
-userFactory.many(2, { username: "override" })
+userFactory.many(2, { username: "override" });
 // [
 //   { usenrame: "override", ... }
 //   { usenrame: "override", ... }
 // ]
-````
+```
 
 Overridden fields apply to all the returned objects.
 
