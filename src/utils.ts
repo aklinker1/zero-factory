@@ -11,18 +11,22 @@ export type DeepPartial<T> = T extends any[] | Date
  * Deep merge objects, not arrays. Only override values with `null`, `undefined` does not override the base value.
  */
 export function deepMerge<T>(base: T, overrides: DeepPartial<T>): T {
-  if (!isMergeable(overrides)) return applyOverride(base, overrides) as T;
+  if (!isMergeable(overrides)) return (overrides ?? base) as T;
 
   return Object.fromEntries(
-    Object.keys({ ...base, ...overrides }).map((key) => [
-      key,
-      deepMerge((base as any)[key], (overrides as any)[key]),
-    ]),
-  ) as T;
-}
+    Object.keys({ ...base, ...overrides })
+      .map((key) => {
+        const baseValue = (base as any)[key];
+        if (!(key in overrides)) return [key, baseValue];
 
-function applyOverride(base: unknown, override: unknown): unknown {
-  return override === undefined ? base : override;
+        const overrideValue = (overrides as any)[key];
+        if (isMergeable(overrideValue))
+          return [key, deepMerge(baseValue, overrideValue)];
+
+        return [key, overrideValue];
+      })
+      .filter((entry) => entry != null),
+  ) as T;
 }
 
 function isMergeable(val: any): val is Record<string, any> {

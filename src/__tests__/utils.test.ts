@@ -111,5 +111,52 @@ describe("Utilities", () => {
 
       expect(actual).toEqual(expected);
     });
+
+    describe.each([undefined, null, "", 0, Symbol(), false])(
+      "When %p is used to override a value",
+      (override) => {
+        it("should override primitives", () => {
+          const base = {
+            a: "a" as any,
+            b: "b",
+          };
+          const expected = {
+            a: override,
+            b: "b",
+          };
+          const actual = deepMerge(base, { a: override });
+
+          expect(actual).toEqual(expected);
+        });
+
+        it("should override objects", () => {
+          const base = {
+            a: { a: "a" } as any,
+            b: "b",
+          };
+          const expected = {
+            a: override,
+            b: "b",
+          };
+          const actual = deepMerge(base, { a: override });
+
+          expect(actual).toEqual(expected);
+        });
+
+        it("should override arrays", () => {
+          const base = {
+            a: [{ a: "a" }] as any,
+            b: "b",
+          };
+          const expected = {
+            a: override,
+            b: "b",
+          };
+          const actual = deepMerge(base, { a: override });
+
+          expect(actual).toEqual(expected);
+        });
+      },
+    );
   });
 });
