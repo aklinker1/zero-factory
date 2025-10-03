@@ -15,16 +15,21 @@ import {
 export type Factory<
   TObject extends Record<string, any>,
   TTraits extends string | undefined = undefined,
+  TAssociations extends Record<string, any> = {}
 > =
-    FactoryFn<TObject>
-  & TraitFactoryFns<TObject, TTraits extends string ? TTraits : never>
+    FactoryFn<TObject, TAssociations>
+  & TraitFactoryFns<TObject, TTraits extends string ? TTraits : never, TAssociations>
   & FactoryModifiers<TObject, TTraits>;
 
 /**
  * Function that takes in overrides and returns a new object.
  */
-export type FactoryFn<TObject> = {
+export type FactoryFn<
+  TObject,
+  TAssociations extends Record<string, any> = {},
+> = {
   (overrides?: DeepPartial<TObject>): TObject;
+
   /**
    * Generate multiple items.
    *
@@ -40,13 +45,24 @@ export type FactoryFn<TObject> = {
    * ```
    */
   many(count: number, overrides?: DeepPartial<TObject>): TObject[];
+
+  /**
+   * Apply associations and return a new factory function.
+   *
+   * @see {@link FactoryModifiers#associate}
+   */
+  with(associations: Partial<TAssociations>): FactoryFn<TObject, {}>;
 };
 
 /**
  * Map of factory functions for traits.
  */
-export type TraitFactoryFns<TObject, TTraits extends string> = {
-  [name in TTraits]: FactoryFn<TObject>;
+export type TraitFactoryFns<
+  TObject,
+  TTraits extends string,
+  TAssociations extends Record<string, any> = {},
+> = {
+  [name in TTraits]: FactoryFn<TObject, TAssociations>;
 };
 
 /**
@@ -55,6 +71,7 @@ export type TraitFactoryFns<TObject, TTraits extends string> = {
 export type FactoryModifiers<
   TObject extends Record<string, any>,
   TTraits extends string | undefined,
+  TAssociations extends Record<string, any> = {},
 > = {
   /**
    * Add a trait or variant to the factory, allowing developers to create the
@@ -81,6 +98,67 @@ export type FactoryModifiers<
     name: T2,
     traitDefaults: DeepPartial<FactoryDefaults<TObject>>,
   ): Factory<TObject, AddTrait<TTraits, T2>>;
+
+  /**
+   * Returns a factory that uses associations to apply default values.
+   *
+   * There are two common use-cases:
+   * - Generating "dependent" properties
+   * - Database relationships
+   *
+   * @example
+   * ```ts
+   * const userFactory = createFactory<User>({
+   *   id: createSequence("user-"),
+   *   email: randEmail(),
+   *   fullName: randFullName(),
+   *   firstName: randFirstName(),
+   *   lastName: randLastName(),
+   * })
+   *   .associate("fullName", (fullName: string) => ({
+   *     fullName,
+   *     firstName: fullName.split(" ")[0],
+   *     lastName: fullName.split(" ")[1],
+   *   })
+   *
+   * userFactory.with({ fullName: "John Doe" })()
+   * // {
+   * //   id: "user-0",
+   * //   email: "john.doe@example.com",
+   * //   fullName: "John Doe",
+   * //   firstName: "John",
+   * //   lastName: "Doe",
+   * // }
+   * ```
+   *
+   * @example
+   * ```ts
+   * const postFactory = createFactory<Post>({
+   *   id: createSequence("post-"),
+   *   userId: createSequence("user-"),
+   *   // ...
+   * })
+   *   .associate("user", (user: User) => ({
+   *     userId: user.id,
+   *   })
+   *
+   * const user = userFactory();
+   * // {
+   * //   id: "user-0",
+   * //   ...
+   * // }
+   * const post = postFactory.with({ user })()
+   * // {
+   * //   id: "post-0",
+   * //   userId: "user-0",
+   * //   // ...
+   * // }
+   * ```
+   */
+  associate<TKey extends string, TValue>(
+    key: TKey,
+    apply: (value: TValue) => DeepPartial<TObject>,
+  ): Factory<TObject, TTraits, AddAssociation<TAssociations, TKey, TValue>>;
 };
 
 // prettier-ignore
@@ -91,6 +169,16 @@ export type AddTrait<
   ? T1 | T2
   : T2;
 
+export type AddAssociation<
+  TAssociations extends Record<string, any>,
+  TKey extends string,
+  TValue,
+> = {
+  [key in keyof TAssociations | TKey]: key extends TKey
+    ? TValue
+    : TAssociations[key];
+};
+
 /**
  * Create a function that returns objects of the specified type.
  * @param defaults The default values for the returned object. Each property can be a value or function that return a value.
@@ -98,12 +186,18 @@ export type AddTrait<
 export function createFactory<T extends Record<string, any>>(
   defaults: FactoryDefaults<T>,
 ): Factory<T> {
-  return createFactoryInternal(defaults, {});
+  return createFactoryInternal(defaults, {
+    traits: {},
+    associations: {},
+  });
 }
 
 function createFactoryInternal<T extends Record<string, any>>(
   defaults: FactoryDefaults<T>,
-  traits: Record<string, FactoryDefaults<T>>,
+  state: {
+    traits: Record<string, FactoryDefaults<T>>;
+    associations: Record<string, (value: any) => DeepPartial<T>>;
+  },
 ): Factory<T, any> {
   const createFactoryFn = (
     factoryDefaults: FactoryDefaults<T>,
@@ -113,6 +207,22 @@ function createFactoryInternal<T extends Record<string, any>>(
 
     factoryFn.many = (count: number, overrides?: any): T[] =>
       generateManyObjects(count, factoryDefaults, overrides);
+
+    factoryFn.with = (associations: Record<string, any>) => {
+      const combinedDefaults = Object.entries(associations).reduce(
+        (acc, [key, value]) => {
+          if (state.associations[key]) {
+            const override = state.associations[key](value);
+            return deepMerge<any>(acc, override);
+          } else {
+            return acc;
+          }
+        },
+        defaults,
+      );
+
+      return createFactoryInternal(combinedDefaults, state);
+    };
 
     return factoryFn as FactoryFn<T>;
   };
@@ -129,14 +239,27 @@ function createFactoryInternal<T extends Record<string, any>>(
         traitDefaults: DeepPartial<FactoryDefaults<T>>,
       ): Factory<T, any> =>
         createFactoryInternal(defaults, {
-          ...traits,
-          [name]: deepMerge<FactoryDefaults<T>>(defaults, traitDefaults),
+          ...state,
+          traits: {
+            ...state.traits,
+            [name]: deepMerge<FactoryDefaults<T>>(defaults, traitDefaults),
+          },
         }),
+
+      associate: (key: string, apply: (value: any) => any) => {
+        return createFactoryInternal(defaults, {
+          ...state,
+          associations: {
+            ...state.associations,
+            [key]: apply,
+          },
+        });
+      },
 
       // Generate Trait functions
 
       ...Object.fromEntries<any>(
-        Object.entries(traits).map<any>(([name, traitDefaults]) => [
+        Object.entries(state.traits).map<any>(([name, traitDefaults]) => [
           name,
           createFactoryFn(traitDefaults),
         ]),

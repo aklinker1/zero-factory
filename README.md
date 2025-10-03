@@ -98,6 +98,45 @@ const user = userFactory({
 > [!IMPORTANT]
 > Arrays are not deeply merged. If a property is an array, overrides will fully replace it, like any other value.
 
+#### Function Defaults
+
+In addition to static values, you can pass a function as a value:
+
+```ts
+const userFactory = createFactory({
+  email: () => `example.${Math.floor(Math.random() * 1000)}@gmail.com`,
+  // ...
+});
+```
+
+Every time the factory is called, this will call the function and, in this case, generate a different `email` each time:
+
+```ts
+userFactory(); // { email: "example.424@gmail.com", ... }
+userFactory(); // { email: "example.133@gmail.com", ... }
+```
+
+This is where [fake data generators](https://www.npmjs.com/search?q=fake%20data) and [sequences](#sequences) come in clutch:
+
+```ts
+import { createFactory, createSequence } from "@aklinker1/zero-factory";
+import {
+  randEmail, // () => string
+  randUsername, // () => string
+  randBoolean, // () => boolean
+} from "@ngneat/falso";
+
+const userFactory = createFactory({
+  id: createSequence("user-"),
+  username: randUsername,
+  email: randEmail,
+  preferences: {
+    receiveMarketingEmails: randBoolean,
+    receiveSecurityEmails: randBoolean,
+  },
+});
+```
+
 #### Many
 
 You can generate multiple objects using `factory.many(...)`. This method will return an array of objects.
@@ -157,43 +196,40 @@ const user = userFactory.noEmails({ username: "overridden" });
 // }
 ```
 
-### Function Defaults
+#### Associations
 
-In addition to static values, you can pass a function as a value:
+If you want to override one or more fields based on a single value, use associations:
 
 ```ts
-const userFactory = createFactory({
-  email: () => `example.${Math.floor(Math.random() * 1000)}@gmail.com`,
+const postFactory = createFactory<Post>({
+  id: createSequence(),
+  userId: userIdSequence,
   // ...
-});
+})
+  .associate("user", (user: User) => ({ userId: user.id }))
 ```
 
-Every time the factory is called, this will call the function and, in this case, generate a different `email` each time:
+Then to generate a post associated with a user, use `with`:
 
 ```ts
-userFactory(); // { email: "example.424@gmail.com", ... }
-userFactory(); // { email: "example.133@gmail.com", ... }
+user;
+// => {
+//   id: 3,
+//   ...
+// }
+
+postFactory.with({ user })();
+// => {
+//   id: 0,
+//   userId: 3,
+//   ...
+// }
 ```
 
-This is where [fake data generators](https://www.npmjs.com/search?q=fake%20data) and [sequences](#sequences) come in clutch:
+Note that `with` returns a factory function, which needs to be called to generate the final object. This allows you to chain other utilities like `.many` or `.trait`:
 
 ```ts
-import { createFactory, createSequence } from "@aklinker1/zero-factory";
-import {
-  randEmail, // () => string
-  randUsername, // () => string
-  randBoolean, // () => boolean
-} from "@ngneat/falso";
-
-const userFactory = createFactory({
-  id: createSequence("user-"),
-  username: randUsername,
-  email: randEmail,
-  preferences: {
-    receiveMarketingEmails: randBoolean,
-    receiveSecurityEmails: randBoolean,
-  },
-});
+postFactory.with({ user }).noEmails.many(3);
 ```
 
 ### Sequences
@@ -249,19 +285,18 @@ May or may not implement these.
 - Associations:
 
   ```ts
-  const userIdSequence = createSequence("user-")
+  const userIdSequence = createSequence("user-");
   const userFactory = createFactory<User>({
     id: userIdSequence,
     // ...
-  })
+  });
   const postFactory = createFactory<Post>({
     id: createSequence("post-"),
     userId: userIdSequence,
-  })
-    .associate<User>("user", (user) => ({
-      userId: user.id
-    }))
+  }).associate("user", (user: User) => ({
+    userId: user.id,
+  }));
 
   const user = userFactory(); // { id: "user-0", ... }
-  const postFactory.with({ user })(/* optional overrides */) // { id: "post-0", userId: "user-0", ... }
+  postFactory.with({ user })(/* optional overrides */); // { id: "post-0", userId: "user-0", ... }
   ```

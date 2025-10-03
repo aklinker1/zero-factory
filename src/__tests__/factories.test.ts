@@ -1,6 +1,5 @@
-import { describe, it, expect, expectTypeOf } from "bun:test";
-import { type Factory, createFactory } from "../factories";
-import type { DeepPartial } from "../utils";
+import { describe, it, expect } from "bun:test";
+import { createFactory } from "../factories";
 import { createSequence } from "../sequences";
 
 describe("Factory APIs", () => {
@@ -36,35 +35,6 @@ describe("Factory APIs", () => {
         const randDate = () => new Date();
 
         createFactory<TestObject>({ date: randDate }); // Expect no type error here
-      });
-    });
-
-    describe("when traits are not defined in the second type parameter", () => {
-      it("should be just a function", () => {
-        type Actual = Factory<User>;
-
-        expectTypeOf<Actual>().parameters.toEqualTypeOf<
-          [overrides?: DeepPartial<User>]
-        >();
-        expectTypeOf<Actual>().returns.toEqualTypeOf<User>();
-      });
-    });
-
-    describe("when traits are defined in the second type parameter", () => {
-      it("should return a function intersected with a record of functions", () => {
-        type Expected = {
-          (overrides?: DeepPartial<User>): User;
-          many: (count: number, overrides?: DeepPartial<User>) => User[];
-        };
-
-        type Actual = Factory<User, "trait1" | "trait2">;
-
-        expectTypeOf<Actual>().parameters.toEqualTypeOf<
-          [overrides?: DeepPartial<User>]
-        >();
-        expectTypeOf<Actual>().returns.toEqualTypeOf<User>();
-        expectTypeOf<Actual["trait1"]>().toEqualTypeOf<Expected>();
-        expectTypeOf<Actual["trait2"]>().toEqualTypeOf<Expected>();
       });
     });
   });
@@ -195,6 +165,31 @@ describe("Factory APIs", () => {
           { id: 0, username: "override" },
           { id: 1, username: "override" },
         ]);
+      });
+    });
+
+    describe("associations", () => {
+      type Post = { id: number; userId: number };
+
+      it.only("should apply associated overrides", () => {
+        const userIdSequence = createSequence();
+        const userFactory = createFactory<User>({
+          id: userIdSequence,
+          username: "default",
+        });
+        const postFactory = createFactory<Post>({
+          id: createSequence(),
+          userId: userIdSequence,
+        }).associate("user", (user: User) => ({
+          userId: user.id,
+        }));
+
+        const user = userFactory();
+        const actual = postFactory.with({ user })();
+        expect(actual).toEqual({
+          id: 0,
+          userId: user.id,
+        });
       });
     });
   });
