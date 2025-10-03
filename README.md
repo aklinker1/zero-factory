@@ -100,7 +100,7 @@ const user = userFactory({
 
 #### Function Defaults
 
-In addition to static values, you can pass a function as a value:
+In addition to static values, the factory definition accepts functions for properties:
 
 ```ts
 const userFactory = createFactory({
@@ -225,7 +225,7 @@ postFactory.with({ user })();
 // }
 ```
 
-Note that `with` returns a factory function, which needs to be called to generate the final object. This allows you to chain other utilities like `.many` or `.trait`:
+Note that `with` returns a factory function, which needs to be called to generate the final object. This allows you to chain other utilities like `.many` and/or traits:
 
 ```ts
 postFactory.with({ user }).noEmails.many(3);
@@ -274,28 +274,3 @@ intSequence(); // "prefix-0"
 intSequence(); // "prefix-1"
 intSequence(); // "prefix-2"
 ```
-
----
-
-## Future Features?
-
-May or may not implement these.
-
-- Associations:
-
-  ```ts
-  const userIdSequence = createSequence("user-");
-  const userFactory = createFactory<User>({
-    id: userIdSequence,
-    // ...
-  });
-  const postFactory = createFactory<Post>({
-    id: createSequence("post-"),
-    userId: userIdSequence,
-  }).associate("user", (user: User) => ({
-    userId: user.id,
-  }));
-
-  const user = userFactory(); // { id: "user-0", ... }
-  postFactory.with({ user })(/* optional overrides */); // { id: "post-0", userId: "user-0", ... }
-  ```
