@@ -105,14 +105,23 @@ function createFactoryInternal<T extends Record<string, any>>(
   defaults: FactoryDefaults<T>,
   traits: Record<string, FactoryDefaults<T>>,
 ): Factory<T, any> {
+  const createFactoryFn = (
+    factoryDefaults: FactoryDefaults<T>,
+  ): FactoryFn<T> => {
+    const factoryFn = (overrides?: any): any =>
+      generateObject(factoryDefaults, overrides);
+
+    factoryFn.many = (count: number, overrides?: any): T[] =>
+      generateManyObjects(count, factoryDefaults, overrides);
+
+    return factoryFn as FactoryFn<T>;
+  };
+
   return Object.assign(
     // Base factory function
-    (overrides?: any): any => generateObject(defaults, overrides),
+    createFactoryFn(defaults),
 
     {
-      many: (count: number, overrides?: any): T[] =>
-        generateManyObjects(count, defaults, overrides),
-
       // Modifier functions
 
       trait: (
@@ -127,15 +136,10 @@ function createFactoryInternal<T extends Record<string, any>>(
       // Generate Trait functions
 
       ...Object.fromEntries<any>(
-        Object.entries(traits).map<any>(([name, traitDefaults]) => {
-          const traitFactory = (overrides?: any): any =>
-            generateObject(traitDefaults, overrides);
-
-          traitFactory.many = (count: number, overrides?: any): T[] =>
-            generateManyObjects(count, traitDefaults, overrides);
-
-          return [name, traitFactory];
-        }),
+        Object.entries(traits).map<any>(([name, traitDefaults]) => [
+          name,
+          createFactoryFn(traitDefaults),
+        ]),
       ),
     },
   ) as any;
