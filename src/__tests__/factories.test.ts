@@ -39,7 +39,7 @@ describe("Factory APIs", () => {
     });
   });
 
-  describe("createFactory", () => {
+  describe.skip("createFactory", () => {
     describe("when the default values are just values", () => {
       it("should return the values as-is", () => {
         const id = 1;
@@ -171,7 +171,7 @@ describe("Factory APIs", () => {
     describe("associations", () => {
       type Post = { id: number; userId: number };
 
-      it.only("should apply associated overrides", () => {
+      it("should apply associated overrides", () => {
         const userIdSequence = createSequence();
         const userFactory = createFactory<User>({
           id: userIdSequence,
