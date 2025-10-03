@@ -205,8 +205,7 @@ const postFactory = createFactory<Post>({
   id: createSequence(),
   userId: userIdSequence,
   // ...
-})
-  .associate("user", (user: User) => ({ userId: user.id }))
+}).associate("user", (user: User) => ({ userId: user.id }));
 ```
 
 Then to generate a post associated with a user, use `with`:
