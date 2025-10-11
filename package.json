@@ -5,6 +5,10 @@
   "packageManager": "bun@1.2.20",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/aklinker1/zero-factory",
+    "type": "git"
+  },
   "keywords": [
     "factory",
     "test",
