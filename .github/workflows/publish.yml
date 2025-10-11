@@ -31,4 +31,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm publish
+      - name: Sync JSR version
+        run: |
+          node -e 'const fs = require("fs"); const ver = require("./package.json").version; let content = fs.readFileSync("jsr.json", "utf8"); fs.writeFileSync("jsr.json", content.replace(/(version"\s*:\s*")[^"]*(")/, `$1${ver}$2`))'
+          git add jsr.json
+          git commit -m "sync \`jsr.json\` version"
+          git push
       - run: bunx jsr publish
