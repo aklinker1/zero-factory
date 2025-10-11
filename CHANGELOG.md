@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.4
+
+[compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.3...v1.1.4)
+
+### 🤖 CI
+
+- Sync jsr.json version ([74d1a8e](https://github.com/aklinker1/zero-factory/commit/74d1a8e))
+
+### ❤️ Contributors
+
+- Aaron ([@aklinker1](https://github.com/aklinker1))
+
 ## v1.1.3
 
 [compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.2...v1.1.3)
