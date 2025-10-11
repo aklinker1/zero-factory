@@ -20,17 +20,15 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-      - run: npm --version
       - run: sudo npm i -g npm@latest
-      - run: npm --version
-      # - run: bun run build
-      # - run: bunx jsr publish --dry-run
-      # - run: npm publish --dry-run
-      # - run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      # - run: bunx changelogen@latest --release --push
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - run: npm publish
-      # - run: bunx jsr publish
+      - run: bun run build
+      - run: bunx jsr publish --dry-run
+      - run: npm publish --dry-run
+      - run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - run: bunx changelogen@latest --release --push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm publish
+      - run: bunx jsr publish
