@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-      - run: npm install -g npm@latest
+      - run: npm --version
       - run: bun run build
       - run: bunx jsr publish --dry-run
       - run: npm publish --dry-run
