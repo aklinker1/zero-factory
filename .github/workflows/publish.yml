@@ -10,6 +10,7 @@ jobs:
   publish:
     name: Publish
     runs-on: ubuntu-24.04
+    needs: [validate]
     permissions:
       contents: read
       id-token: write
@@ -25,5 +26,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - run: bunx changelogen@latest --release --push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm publish
       - run: bunx jsr publish
