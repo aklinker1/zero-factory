@@ -19,6 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
+      - run: npm install -g npm@latest
       - run: bun run build
       - run: bunx jsr publish --dry-run
       - run: npm publish --dry-run
