@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [validate]
     permissions:
-      contents: read
-      id-token: write
+      contents: write # Allow pushing
+      id-token: write # Enable OIDC for NPM and JSR
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
