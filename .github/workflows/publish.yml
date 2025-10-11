@@ -1,0 +1,29 @@
+name: Publish
+on:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate
+    uses: "./.github/workflows/validate.yml"
+    secrets: inherit
+  publish:
+    name: Publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - run: bun run build
+      - run: bunx jsr publish --dry-run
+      - run: npm publish --dry-run
+      - run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - run: bunx changelogen@latest --release --push
+      - run: npm publish
+      - run: bunx jsr publish
