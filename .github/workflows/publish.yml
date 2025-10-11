@@ -23,7 +23,7 @@ jobs:
       - run: sudo npm i -g npm@latest
       - run: bun run build
       - run: bunx jsr publish --dry-run
-      - run: npm publish --dry-run
+      # - run: npm publish --dry-run # NPM fails with " npm error You cannot publish over the previously published versions: X.Y.Z."
       - run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
