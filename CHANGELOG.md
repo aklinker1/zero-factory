@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.1.3
+
+[compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.2...v1.1.3)
+
+### 🏡 Chore
+
+- Add `repository.url` to `package.json` ([45b60d7](https://github.com/aklinker1/zero-factory/commit/45b60d7))
+- Fix checks ([ba49bf0](https://github.com/aklinker1/zero-factory/commit/ba49bf0))
+
+### ❤️ Contributors
+
+- Aaron ([@aklinker1](https://github.com/aklinker1))
+
 ## v1.1.2
 
 [compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.1...v1.1.2)
