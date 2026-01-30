@@ -1,5 +1,5 @@
-import { describe, it, expect, expectTypeOf } from "bun:test";
-import { deepMerge, type DeepPartial } from "../utils";
+import { describe, expect, expectTypeOf, it } from "bun:test";
+import { deepMerge, type DeepPartial, type FactoryDefaults } from "../utils";
 
 describe("Utilities", () => {
   describe("DeepPartial", () => {
@@ -158,5 +158,73 @@ describe("Utilities", () => {
         });
       },
     );
+  });
+
+  describe("FactoryDefault", () => {
+    it('should accept a "boolean" or "() => boolean"', () => {
+      type Input = { a: boolean };
+      type Expected = { a: boolean | (() => boolean) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it('should accept a "string" or "() => string"', () => {
+      type Input = { a: string };
+      type Expected = { a: string | (() => string) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it('should accept a "number" or "() => number"', () => {
+      type Input = { a: number };
+      type Expected = { a: number | (() => number) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it('should accept a "Branded" or "() => Branded"', () => {
+      type Branded = number & { __brand: "date" };
+      type Input = { a: Branded };
+      type Expected = { a: Branded | (() => Branded) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should optionally accept optional keys", () => {
+      type Input = { a?: string };
+      type Expected = { a?: string | (() => string | undefined) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should require undefinable keys", () => {
+      type Input = { a: string | undefined };
+      type Expected = { a: string | undefined | (() => string | undefined) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should require nullable keys", () => {
+      type Input = { a: string | null };
+      type Expected = { a: string | null | (() => string | null) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should deeply expand object keys", () => {
+      type Input = { a: { b: boolean } };
+      type Expected = { a: { b: boolean | (() => boolean) } };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should not deeply expand array keys", () => {
+      type Input = { a: Array<{ b: boolean }> };
+      type Expected = {
+        a: Array<{ b: boolean }> | (() => Array<{ b: boolean }>);
+      };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
   });
 });

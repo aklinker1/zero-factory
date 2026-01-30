@@ -42,14 +42,29 @@ function isMergeable(val: any): val is Record<string, any> {
   );
 }
 
+/**
+ * List of types used by {@link FactoryDefaults} to "stop" the recursion and
+ * return `T | (() => T)` for. Runtime checks for this list happen in
+ * {@link isMergeable}.
+ */
+export type NonMergeableValue =
+  // Don't allow factory functions in arrays
+  | any[]
+  // Allow factory functions for this class
+  | Date
+  // Primitives
+  | string
+  | boolean
+  | number
+  | null
+  | undefined;
+
 export type FactoryDefaults<T extends Record<string, any>> = {
-  [Key in keyof T]: T[Key] extends any[] | Date
+  [Key in keyof T]: T[Key] extends NonMergeableValue
     ? T[Key] | (() => T[Key])
     : T[Key] extends Record<string, any>
       ? FactoryDefaults<T[Key]>
-      : T[Key] extends Function
-        ? never
-        : T[Key] | (() => T[Key]);
+      : never;
 };
 
 export function resolveDefaults<T extends Record<string, any>>(

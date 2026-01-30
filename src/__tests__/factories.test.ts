@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { createFactory } from "../factories";
 import { createSequence } from "../sequences";
 
@@ -39,7 +39,7 @@ describe("Factory APIs", () => {
     });
   });
 
-  describe.skip("createFactory", () => {
+  describe("createFactory", () => {
     describe("when the default values are just values", () => {
       it("should return the values as-is", () => {
         const id = 1;
