@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v1.1.5
+
+[compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.4...v1.1.5)
+
+### 🩹 Fixes
+
+- Support branded types ([42e4b81](https://github.com/aklinker1/zero-factory/commit/42e4b81))
+
+### 🏡 Chore
+
+- Upgrade to Bun 1.3.6 ([dafc728](https://github.com/aklinker1/zero-factory/commit/dafc728))
+- Sort imports ([3fa5a3f](https://github.com/aklinker1/zero-factory/commit/3fa5a3f))
+
+### ❤️ Contributors
+
+- Aaron ([@aklinker1](https://github.com/aklinker1))
+
 ## v1.1.4
 
 [compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.3...v1.1.4)
