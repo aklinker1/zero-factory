@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.5...v1.2.0)
+
+### 🚀 Enhancements
+
+- Allow using functions for nested objects, similar to primatives and arrays ([045fb42](https://github.com/aklinker1/zero-factory/commit/045fb42))
+
+### ❤️ Contributors
+
+- Aaron ([@aklinker1](https://github.com/aklinker1))
+
 ## v1.1.5
 
 [compare changes](https://github.com/aklinker1/zero-factory/compare/v1.1.4...v1.1.5)
