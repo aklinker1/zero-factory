@@ -211,6 +211,13 @@ describe("Utilities", () => {
       expectTypeOf<Actual>().toEqualTypeOf<Expected>();
     });
 
+    it("should handle literal union types", () => {
+      type Input = { a: 2 | 3 };
+      type Expected = { a: 2 | 3 | (() => 2 | 3) };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
     it("should deeply expand object keys", () => {
       type Input = { a: { b: boolean } };
       type Expected = {

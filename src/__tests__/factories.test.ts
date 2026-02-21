@@ -46,6 +46,13 @@ describe("Factory APIs", () => {
 
         createFactory<TestObject>({ nested: randNested }); // Expect no type error here
       });
+
+      it("should allow a function that returns a literal union type", () => {
+        type TestObject = { manifest_version: 2 | 3 };
+        const randVersion = (): 2 | 3 => (Math.random() > 0.5 ? 2 : 3);
+
+        createFactory<TestObject>({ manifest_version: randVersion }); // Expect no type error here
+      });
     });
   });
 
