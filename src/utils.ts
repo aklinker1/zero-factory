@@ -59,12 +59,34 @@ export type NonMergeableValue =
   | null
   | undefined;
 
+/**
+ * Helper type to extract the non-null, non-undefined parts of a type.
+ */
+type NonNullableCore<T> = Exclude<T, null | undefined>;
+
+/**
+ * Maps a value type `T` to its allowed factory default type.
+ *
+ * This uses a two-step approach:
+ * 1. If the core type (without null/undefined) is a NonMergeableValue, keep the
+ *    whole union intact and allow `() => T` where T includes null/undefined.
+ *    This preserves `() => string | undefined` instead of splitting it.
+ * 2. If the core type is an object, expand it recursively and handle null/undefined
+ *    separately to support `{ a: string } | null | undefined` properly.
+ */
+type FactoryDefaultValue<T> =
+  NonNullableCore<T> extends NonMergeableValue
+    ? T | (() => T)
+    : NonNullableCore<T> extends Record<string, any>
+      ?
+          | FactoryDefaults<NonNullableCore<T>>
+          | (() => NonNullableCore<T>)
+          | (null extends T ? null | (() => null) : never)
+          | (undefined extends T ? undefined | (() => undefined) : never)
+      : T | (() => T);
+
 export type FactoryDefaults<T extends Record<string, any>> = {
-  [Key in keyof T]: T[Key] extends NonMergeableValue
-    ? T[Key] | (() => T[Key])
-    : T[Key] extends Record<string, any>
-      ? FactoryDefaults<T[Key]> | (() => T[Key])
-      : never;
+  [Key in keyof T]: FactoryDefaultValue<T[Key]>;
 };
 
 export function resolveDefaults<T extends Record<string, any>>(

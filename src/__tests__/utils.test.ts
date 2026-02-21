@@ -220,6 +220,32 @@ describe("Utilities", () => {
       expectTypeOf<Actual>().toEqualTypeOf<Expected>();
     });
 
+    it("should handle an object | undefined property", () => {
+      type Input = { a: { b: string } | undefined };
+      type Expected = {
+        a:
+          | { b: string | (() => string) }
+          | (() => { b: string })
+          | undefined
+          | (() => undefined);
+      };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it("should handle an object | null property", () => {
+      type Input = { a: { b: string } | null };
+      type Expected = {
+        a:
+          | { b: string | (() => string) }
+          | (() => { b: string })
+          | null
+          | (() => null);
+      };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
     it('should accept a "() => object" for an object property', () => {
       type Input = { a: { b: string; c: number } };
       type Expected = {

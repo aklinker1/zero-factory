@@ -80,6 +80,42 @@ describe("Factory APIs", () => {
         expect(factory()).toEqual(expected1);
       });
 
+      it("should call a function that returns an object | undefined to resolve the value", () => {
+        type TestObject = { nested: { value: number } | undefined };
+        const factory = createFactory<TestObject>({
+          nested: () => undefined,
+        });
+
+        expect(factory()).toEqual({ nested: undefined });
+      });
+
+      it("should call a function that returns an object | null to resolve the value", () => {
+        type TestObject = { nested: { value: number } | null };
+        const factory = createFactory<TestObject>({
+          nested: () => null,
+        });
+
+        expect(factory()).toEqual({ nested: null });
+      });
+
+      it("should use a plain undefined value for an object | undefined property", () => {
+        type TestObject = { nested: { value: number } | undefined };
+        const factory = createFactory<TestObject>({
+          nested: undefined,
+        });
+
+        expect(factory()).toEqual({ nested: undefined });
+      });
+
+      it("should use a plain null value for an object | null property", () => {
+        type TestObject = { nested: { value: number } | null };
+        const factory = createFactory<TestObject>({
+          nested: null,
+        });
+
+        expect(factory()).toEqual({ nested: null });
+      });
+
       it("should call a function that returns an object to resolve the value", () => {
         type TestObject = { nested: { value: number } };
         let counter = 0;
