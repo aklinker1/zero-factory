@@ -213,7 +213,20 @@ describe("Utilities", () => {
 
     it("should deeply expand object keys", () => {
       type Input = { a: { b: boolean } };
-      type Expected = { a: { b: boolean | (() => boolean) } };
+      type Expected = {
+        a: { b: boolean | (() => boolean) } | (() => { b: boolean });
+      };
+      type Actual = FactoryDefaults<Input>;
+      expectTypeOf<Actual>().toEqualTypeOf<Expected>();
+    });
+
+    it('should accept a "() => object" for an object property', () => {
+      type Input = { a: { b: string; c: number } };
+      type Expected = {
+        a:
+          | { b: string | (() => string); c: number | (() => number) }
+          | (() => { b: string; c: number });
+      };
       type Actual = FactoryDefaults<Input>;
       expectTypeOf<Actual>().toEqualTypeOf<Expected>();
     });

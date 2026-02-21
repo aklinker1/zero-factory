@@ -36,6 +36,16 @@ describe("Factory APIs", () => {
 
         createFactory<TestObject>({ date: randDate }); // Expect no type error here
       });
+
+      it("should allow a function that returns an object for an object property", () => {
+        type TestObject = { nested: { a: string; b: number } };
+        const randNested = (): { a: string; b: number } => ({
+          a: "hello",
+          b: 42,
+        });
+
+        createFactory<TestObject>({ nested: randNested }); // Expect no type error here
+      });
     });
   });
 
@@ -68,6 +78,28 @@ describe("Factory APIs", () => {
 
         expect(factory()).toEqual(expected0);
         expect(factory()).toEqual(expected1);
+      });
+
+      it("should call a function that returns an object to resolve the value", () => {
+        type TestObject = { nested: { value: number } };
+        let counter = 0;
+        const factory = createFactory<TestObject>({
+          nested: () => ({ value: counter++ }),
+        });
+
+        expect(factory()).toEqual({ nested: { value: 0 } });
+        expect(factory()).toEqual({ nested: { value: 1 } });
+      });
+
+      it("should allow overriding properties of an object returned by a function", () => {
+        type TestObject = { nested: { a: string; b: number } };
+        const factory = createFactory<TestObject>({
+          nested: () => ({ a: "default", b: 0 }),
+        });
+
+        expect(factory({ nested: { a: "override" } })).toEqual({
+          nested: { a: "override", b: 0 },
+        });
       });
     });
 

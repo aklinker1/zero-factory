@@ -63,7 +63,7 @@ export type FactoryDefaults<T extends Record<string, any>> = {
   [Key in keyof T]: T[Key] extends NonMergeableValue
     ? T[Key] | (() => T[Key])
     : T[Key] extends Record<string, any>
-      ? FactoryDefaults<T[Key]>
+      ? FactoryDefaults<T[Key]> | (() => T[Key])
       : never;
 };
 
